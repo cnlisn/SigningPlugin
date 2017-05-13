@@ -87,6 +87,36 @@ public class SigningActivity extends Activity {
                 canvas = new Canvas(baseBitmap);
                 canvas.drawColor(Color.WHITE);
                 canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
+                iv.setOnTouchListener(new View.OnTouchListener() {
+                    int startX;
+                    int startY;
+
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_DOWN:
+                                startX = (int) event.getX();
+                                startY = (int) event.getY();
+                                canvas.drawPoint(startX, startY, paint);
+                                iv.setImageBitmap(baseBitmap);
+                                break;
+                            case MotionEvent.ACTION_MOVE:
+                                int newX = (int) event.getX();
+                                int newY = (int) event.getY();
+                                canvas.drawLine(startX, startY, newX, newY, paint);
+                                startX = (int) event.getX();
+                                startY = (int) event.getY();
+                                iv.setImageBitmap(baseBitmap);
+                                break;
+                            case MotionEvent.ACTION_UP:
+                                break;
+
+                            default:
+                                break;
+                        }
+                        return true;
+                    }
+                });
             }
         }
     };
@@ -122,36 +152,38 @@ public class SigningActivity extends Activity {
         paint.setColor(Color.BLACK);
         paint.setAntiAlias(true);
         handler.sendEmptyMessageDelayed(flag88, 500);
-        iv.setOnTouchListener(new View.OnTouchListener() {
-            int startX;
-            int startY;
-
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        startX = (int) event.getX();
-                        startY = (int) event.getY();
-                        canvas.drawPoint(startX, startY, paint);
-                        iv.setImageBitmap(baseBitmap);
-                        break;
-                    case MotionEvent.ACTION_MOVE:
-                        int newX = (int) event.getX();
-                        int newY = (int) event.getY();
-                        canvas.drawLine(startX, startY, newX, newY, paint);
-                        startX = (int) event.getX();
-                        startY = (int) event.getY();
-                        iv.setImageBitmap(baseBitmap);
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        break;
-
-                    default:
-                        break;
-                }
-                return true;
-            }
-        });
+        //region Description
+//        iv.setOnTouchListener(new View.OnTouchListener() {
+//            int startX;
+//            int startY;
+//
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                switch (event.getAction()) {
+//                    case MotionEvent.ACTION_DOWN:
+//                        startX = (int) event.getX();
+//                        startY = (int) event.getY();
+//                        canvas.drawPoint(startX, startY, paint);
+//                        iv.setImageBitmap(baseBitmap);
+//                        break;
+//                    case MotionEvent.ACTION_MOVE:
+//                        int newX = (int) event.getX();
+//                        int newY = (int) event.getY();
+//                        canvas.drawLine(startX, startY, newX, newY, paint);
+//                        startX = (int) event.getX();
+//                        startY = (int) event.getY();
+//                        iv.setImageBitmap(baseBitmap);
+//                        break;
+//                    case MotionEvent.ACTION_UP:
+//                        break;
+//
+//                    default:
+//                        break;
+//                }
+//                return true;
+//            }
+//        });
+        //endregion
 
         if (findFrontFacingCamera() != -1) {
             InitSurfaceView();
