@@ -43,7 +43,7 @@
 
     </LinearLayout>
 
-    <FrameLayout
+    <!--<FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
@@ -58,7 +58,25 @@
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
             android:background="#fff" />
-    </FrameLayout>
+    </FrameLayout>-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <ImageView
+            android:id="@+id/iv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#fff" />
+        <SurfaceView
+            android:id="@+id/camera_show_view"
+            android:layout_width="80dp"
+            android:layout_height="120dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/ll"

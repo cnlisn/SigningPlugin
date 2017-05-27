@@ -1,4 +1,5 @@
 package com.lisn.signingplugin;
+//package com.tdkj.signing;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -37,6 +39,9 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.os.Build;
 
+import com.lisn.signingplugin.FakeR;
+
+//import com.tdkj.signing.SigningPlugin;
 public class SigningActivity extends Activity {
 
     private ImageView iv;
@@ -47,6 +52,8 @@ public class SigningActivity extends Activity {
     private FakeR R;
     private String titleColor = "#a266c4";
     private String TAG = "----";
+    private SurfaceView surfaceView;
+    boolean isVisibility;
 
     private void title() {
         LinearLayout ll = (LinearLayout) findViewById(R.getId("id", "ll_title"));
@@ -61,16 +68,33 @@ public class SigningActivity extends Activity {
         iv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+//                SigningPlugin.cbCtx.error("null");
                 finish();
             }
         });
-
+//        public static int px2dip(Context context, float pxValue){
+//            final float scale = context.getResource().getDisplayMetrics().density;
+//            return (int)(pxValue / scale + 0.5f);
+//        }
         ImageView iv_info = (ImageView) findViewById(R.getId("id", "iv_info"));
-        iv_info.setVisibility(View.GONE);
         iv_info.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (isVisibility) {
+                    isVisibility=false;
+                    ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
+                    lp.height = 120;
+                    lp.width = 80;
+                    surfaceView.setLayoutParams(lp);
+                } else {
+                    isVisibility=true;
+//                    surfaceView.setMinimumWidth(8);
+//                    surfaceView.setMinimumHeight(10);
+                    ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
+                    lp.height = 1;
+                    lp.width = 1;
+                    surfaceView.setLayoutParams(lp);
+                }
             }
         });
     }
@@ -131,13 +155,13 @@ public class SigningActivity extends Activity {
 
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            Log.e(TAG, "initView: "+Build.VERSION.SDK_INT+"=="+ Build.VERSION_CODES.M);
+            Log.e(TAG, "initView: " + Build.VERSION.SDK_INT + "==" + Build.VERSION_CODES.M);
             initView();
 //            InitSurfaceView();
 //            Record();
         } else {
             hasPermission();
-            Log.e(TAG, "hasPermission: "+Build.VERSION.SDK_INT+"=="+ Build.VERSION_CODES.M);
+            Log.e(TAG, "hasPermission: " + Build.VERSION.SDK_INT + "==" + Build.VERSION_CODES.M);
         }
         title();
     }
@@ -229,7 +253,7 @@ public class SigningActivity extends Activity {
             intent.setAction(intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
             intent.setData(Uri.fromFile(Environment.getExternalStorageDirectory()));
             sendBroadcast(intent);
-
+//            SigningPlugin.cbCtx.success(qm_path + "##" + Sp_path);
             Log.e(TAG, "SaveImage: " + qm_path + "--" + Sp_path);
             finish();
 
@@ -300,7 +324,7 @@ public class SigningActivity extends Activity {
     private SurfaceHolder mSurfaceHolder;
 
     private void InitSurfaceView() {
-        SurfaceView surfaceView = (SurfaceView) findViewById(R.getId("id", "camera_show_view"));
+        surfaceView = (SurfaceView) findViewById(R.getId("id", "camera_show_view"));
         mSurfaceHolder = surfaceView.getHolder();
         mSurfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
         mSurfaceHolder.setFixedSize(1280, 720);
@@ -343,6 +367,7 @@ public class SigningActivity extends Activity {
                 myCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);//前置摄像头
                 Camera.Parameters myParameters = myCamera.getParameters();
                 myCamera.setParameters(myParameters);
+                myCamera.setDisplayOrientation(90);
                 myCamera.setPreviewDisplay(mSurfaceHolder);
                 myCamera.startPreview();
             } catch (Exception e) {
@@ -363,12 +388,12 @@ public class SigningActivity extends Activity {
                 }
                 if (mediaRecorder != null) {
                     mediaRecorder.release();
-                    mediaRecorder=null;
+                    mediaRecorder = null;
                 }
                 if (mediaRecorder == null) {
                     String path = this.getFilesDir().getPath();
 //                    File file1 = new File(String.valueOf(Environment.getExternalStorageDirectory()) + File.separator + "Sp");
-                File file1 = new File(path + File.separator + "Sp");
+                    File file1 = new File(path + File.separator + "Sp");
                     if (!file1.exists()) {
                         file1.mkdirs();
                     }
@@ -402,6 +427,7 @@ public class SigningActivity extends Activity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
+//            SigningPlugin.cbCtx.error("null");
         }
         return super.onKeyDown(keyCode, event);
     }

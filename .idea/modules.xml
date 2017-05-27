@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/SigningPlugin.iml" filepath="$PROJECT_DIR$/SigningPlugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/SigningPluginAs.iml" filepath="$PROJECT_DIR$/SigningPluginAs.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
