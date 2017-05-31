@@ -9,5 +9,10 @@
       android:text="jmp录像页面"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content" />
+  <ImageView
+      android:id="@+id/iv"
+      android:src="@mipmap/ic_launcher"
+      android:layout_width="80dp"
+      android:layout_height="120dp" />
 
 </LinearLayout>

@@ -15,6 +15,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -78,13 +79,13 @@ public class SigningActivity extends Activity {
             @Override
             public void onClick(View v) {
                 if (isVisibility) {
-                    isVisibility=false;
+                    isVisibility = false;
                     ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
-                    lp.height = dip2px(SigningActivity.this,120);
-                    lp.width =  dip2px(SigningActivity.this,80);
+                    lp.height = dip2px(SigningActivity.this, 120);
+                    lp.width = dip2px(SigningActivity.this, 80);
                     surfaceView.setLayoutParams(lp);
                 } else {
-                    isVisibility=true;
+                    isVisibility = true;
                     ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
                     lp.height = 1;
                     lp.width = 1;
@@ -93,10 +94,12 @@ public class SigningActivity extends Activity {
             }
         });
     }
+
     public static int dip2px(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }
+
     private int flag88 = 88;
     Handler handler = new Handler() {
         @Override
@@ -294,6 +297,56 @@ public class SigningActivity extends Activity {
         }
     }
 
+    private View.OnTouchListener TouchListener = new View.OnTouchListener() {
+        int lastX, lastY;
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            int ea = event.getAction();
+            DisplayMetrics dm = getResources().getDisplayMetrics();
+            int screenWidth = dm.widthPixels;
+//            int screenHeight = dm.heightPixels - 100;//需要减掉图片的高度
+            int screenHeight = dm.heightPixels-v.getHeight();
+            switch (ea) {
+                case MotionEvent.ACTION_DOWN:
+                    lastX = (int) event.getRawX();
+                    lastY = (int) event.getRawY();
+                case MotionEvent.ACTION_MOVE:
+                    int dx = (int) event.getRawX() - lastX;
+                    int dy = (int) event.getRawY() - lastY;
+                    int l = v.getLeft() + dx;
+                    int b = v.getBottom() + dy;
+                    int r = v.getRight() + dx;
+                    int t = v.getTop() + dy;
+
+                    if (l < 0) {
+                        l = 0;
+                        r = l + v.getWidth();
+                    }
+                    if (t < 0) {
+                        t = 0;
+                        b = t + v.getHeight();
+                    }
+                    if (r > screenWidth) {
+                        r = screenWidth;
+                        l = r - v.getWidth();
+                    }
+                    if (b > screenHeight) {
+                        b = screenHeight;
+                        t = b - v.getHeight();
+                    }
+                    v.layout(l, t, r, b);
+                    Log.e(TAG, "onTouch: " +l+"=="+t+"=="+r+"=="+b);
+                    lastX = (int) event.getRawX();
+                    lastY = (int) event.getRawY();
+                    v.postInvalidate();
+                    break;
+                case MotionEvent.ACTION_UP:
+                    break;
+            }
+            return true;
+        }
+    };
 
     /**
      * 找前置摄像头,没有则返回-1
@@ -350,6 +403,7 @@ public class SigningActivity extends Activity {
             }
         };
         mSurfaceHolder.addCallback(callback);
+        surfaceView.setOnTouchListener(TouchListener);
     }
 
     private Camera myCamera;
