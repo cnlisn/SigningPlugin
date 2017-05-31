@@ -2,6 +2,7 @@ package com.lisn.signingplugin;
 //package com.tdkj.signing;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -72,10 +73,6 @@ public class SigningActivity extends Activity {
                 finish();
             }
         });
-//        public static int px2dip(Context context, float pxValue){
-//            final float scale = context.getResource().getDisplayMetrics().density;
-//            return (int)(pxValue / scale + 0.5f);
-//        }
         ImageView iv_info = (ImageView) findViewById(R.getId("id", "iv_info"));
         iv_info.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,13 +80,11 @@ public class SigningActivity extends Activity {
                 if (isVisibility) {
                     isVisibility=false;
                     ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
-                    lp.height = 120;
-                    lp.width = 80;
+                    lp.height = dip2px(SigningActivity.this,120);
+                    lp.width =  dip2px(SigningActivity.this,80);
                     surfaceView.setLayoutParams(lp);
                 } else {
                     isVisibility=true;
-//                    surfaceView.setMinimumWidth(8);
-//                    surfaceView.setMinimumHeight(10);
                     ViewGroup.LayoutParams lp = surfaceView.getLayoutParams();
                     lp.height = 1;
                     lp.width = 1;
@@ -98,7 +93,10 @@ public class SigningActivity extends Activity {
             }
         });
     }
-
+    public static int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
     private int flag88 = 88;
     Handler handler = new Handler() {
         @Override
@@ -157,8 +155,6 @@ public class SigningActivity extends Activity {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
             Log.e(TAG, "initView: " + Build.VERSION.SDK_INT + "==" + Build.VERSION_CODES.M);
             initView();
-//            InitSurfaceView();
-//            Record();
         } else {
             hasPermission();
             Log.e(TAG, "hasPermission: " + Build.VERSION.SDK_INT + "==" + Build.VERSION_CODES.M);
@@ -211,7 +207,6 @@ public class SigningActivity extends Activity {
 
         if (findFrontFacingCamera() != -1) {
             InitSurfaceView();
-//            initCamera();
         } else {
             Toast.makeText(this, "手机没有前置摄像头", Toast.LENGTH_SHORT).show();
         }
@@ -227,7 +222,6 @@ public class SigningActivity extends Activity {
         try {
             SaveImage();
         } catch (Exception e) {
-            //TODO: handle exception
         }
 
     }
