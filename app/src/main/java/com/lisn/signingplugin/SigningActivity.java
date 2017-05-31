@@ -106,9 +106,10 @@ public class SigningActivity extends Activity {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.what == flag88) {
-                int width = iv.getWidth();
-                int height = iv.getHeight();
+                final int width = iv.getWidth();
+                final int height = iv.getHeight();
                 baseBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+                iv.setImageBitmap(baseBitmap);
                 canvas = new Canvas(baseBitmap);
                 canvas.drawColor(Color.WHITE);
                 canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
@@ -137,6 +138,56 @@ public class SigningActivity extends Activity {
                                 break;
 
                             default:
+                                break;
+                        }
+                        return true;
+                    }
+                });
+
+                surfaceView.setOnTouchListener(new View.OnTouchListener() {
+                    int lastX, lastY, l, b, r, t;
+
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        int ea = event.getAction();
+                        int screenWidth = width;
+                        int screenHeight = height;
+                        switch (ea) {
+                            case MotionEvent.ACTION_DOWN:
+                                lastX = (int) event.getRawX();
+                                lastY = (int) event.getRawY();
+                            case MotionEvent.ACTION_MOVE:
+                                int dx = (int) event.getRawX() - lastX;
+                                int dy = (int) event.getRawY() - lastY;
+                                l = v.getLeft() + dx;
+                                b = v.getBottom() + dy;
+                                r = v.getRight() + dx;
+                                t = v.getTop() + dy;
+
+                                if (l < 0) {
+                                    l = 0;
+                                    r = l + v.getWidth();
+                                }
+                                if (t < 0) {
+                                    t = 0;
+                                    b = t + v.getHeight();
+                                }
+                                if (r > screenWidth) {
+                                    r = screenWidth;
+                                    l = r - v.getWidth();
+                                }
+                                if (b > screenHeight) {
+                                    b = screenHeight;
+                                    t = b - v.getHeight();
+                                }
+                                v.layout(l, t, r, b);
+                                Log.e(TAG, "onTouch: " + l + "==" + t + "==" + r + "==" + b);
+                                lastX = (int) event.getRawX();
+                                lastY = (int) event.getRawY();
+                                v.postInvalidate();
+                                break;
+                            case MotionEvent.ACTION_UP:
+
                                 break;
                         }
                         return true;
@@ -306,7 +357,7 @@ public class SigningActivity extends Activity {
             DisplayMetrics dm = getResources().getDisplayMetrics();
             int screenWidth = dm.widthPixels;
 //            int screenHeight = dm.heightPixels - 100;//需要减掉图片的高度
-            int screenHeight = dm.heightPixels-v.getHeight();
+            int screenHeight = dm.heightPixels - v.getHeight();
             switch (ea) {
                 case MotionEvent.ACTION_DOWN:
                     lastX = (int) event.getRawX();
@@ -336,7 +387,7 @@ public class SigningActivity extends Activity {
                         t = b - v.getHeight();
                     }
                     v.layout(l, t, r, b);
-                    Log.e(TAG, "onTouch: " +l+"=="+t+"=="+r+"=="+b);
+                    Log.e(TAG, "onTouch: " + l + "==" + t + "==" + r + "==" + b);
                     lastX = (int) event.getRawX();
                     lastY = (int) event.getRawY();
                     v.postInvalidate();
@@ -403,7 +454,7 @@ public class SigningActivity extends Activity {
             }
         };
         mSurfaceHolder.addCallback(callback);
-        surfaceView.setOnTouchListener(TouchListener);
+//        surfaceView.setOnTouchListener(TouchListener);
     }
 
     private Camera myCamera;
