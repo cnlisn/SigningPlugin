@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.lisn.signingplugin">
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-permission-sdk-23 android:name="android.permission.CAMERA" />
     <uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
     <uses-permission-sdk-23 android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission-sdk-23 android:name="android.permission.RECORD_AUDIO" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <application
         android:name=".app"
         android:allowBackup="true"
@@ -28,7 +33,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SigningActivity"/>
+        <activity android:name=".SigningActivity" />
+        <!--<provider-->
+        <!--android:name="android.support.v4.content.FileProvider" //固定值-->
+        <!--android:authorities="com.renwohua.conch.fileprovider"//路径 前面为包名，后面为fileprovider固定值，使用包名便于区分-->
+        <!--android:exported="false"//是否支持其它应用调用当前组件 ，要求为flase-->
+        <!--android:grantUriPermissions="true">-->
+        <!--<meta-data-->
+        <!--android:name="android.support.FILE_PROVIDER_PATHS"//固定值-->
+        <!--android:resource="@xml/filepaths"/>//在res目录下定义的filepaths.xml文件，名字可以自定义-->
+        <!--</provider>-->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
     </application>
 
 </manifest>

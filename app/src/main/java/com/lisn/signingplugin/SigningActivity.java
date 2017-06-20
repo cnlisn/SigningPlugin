@@ -14,6 +14,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -499,6 +500,8 @@ public class SigningActivity extends Activity {
                     String child = System.currentTimeMillis() + ".mp4";
                     Sp_path = (file1.getAbsolutePath() + File.separator + child);
                     File videoFile = new File(file1, child);
+                    Log.e("---", "Record: "+videoFile.getAbsolutePath() );
+                    Log.e("---", "Record: "+SigningActivity.this.getFilesDir() );
                     mediaRecorder = new MediaRecorder();
 
                     myCamera.unlock();
@@ -510,7 +513,20 @@ public class SigningActivity extends Activity {
                     mediaRecorder.setVideoFrameRate(5);
                     mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
                     mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-                    mediaRecorder.setOutputFile(videoFile.getAbsolutePath());
+                    if(Build.VERSION.SDK_INT>=24) { //判读版本是否在7.0以上
+                        Uri uriForFile = FileProvider.getUriForFile(SigningActivity.this, BuildConfig.APPLICATION_ID+".fileprovider", videoFile);
+                        Log.e("---", "getPath: "+uriForFile.getPath() );
+                        Log.e("---", "getEncodedPath: "+uriForFile.getEncodedPath() );
+                        Log.e("---", "getAuthority: "+uriForFile.getAuthority() );
+                        Log.e("---", "getLastPathSegment: "+uriForFile.getLastPathSegment() );
+//                        06-20 11:02:48.953 26990-26990/com.lisn.signingplugin E/---: getPath: /Sp/1497927768935.mp4
+//                        06-20 11:02:48.953 26990-26990/com.lisn.signingplugin E/---: getEncodedPath: /Sp/1497927768935.mp4
+//                        06-20 11:02:48.953 26990-26990/com.lisn.signingplugin E/---: getAuthority: com.lisn.signingplugin.fileprovider
+//                        06-20 11:02:48.953 26990-26990/com.lisn.signingplugin E/---: getLastPathSegment: 1497927768935.mp4
+                        mediaRecorder.setOutputFile(uriForFile.getPath());
+                    }else {
+                        mediaRecorder.setOutputFile(videoFile.getAbsolutePath());
+                    }
                     mediaRecorder.setPreviewDisplay(mSurfaceHolder.getSurface());
                     mediaRecorder.setOrientationHint(270);
                 }
