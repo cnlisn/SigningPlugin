@@ -104,6 +104,9 @@ public class SigningActivity extends Activity {
         return (int) (dpValue * scale + 0.5f);
     }
 
+    private float startX;
+    private float startY;
+
     private int flag88 = 88;
     Handler handler = new Handler() {
         @Override
@@ -118,25 +121,37 @@ public class SigningActivity extends Activity {
                 canvas.drawColor(Color.WHITE);
                 canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG));
                 iv.setOnTouchListener(new View.OnTouchListener() {
-                    int startX;
-                    int startY;
 
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
-                                startX = (int) event.getX();
-                                startY = (int) event.getY();
+                                startX = (float) event.getX();
+                                startY = (float) event.getY();
                                 canvas.drawPoint(startX, startY, paint);
                                 iv.setImageBitmap(baseBitmap);
                                 break;
                             case MotionEvent.ACTION_MOVE:
-                                int newX = (int) event.getX();
-                                int newY = (int) event.getY();
-                                canvas.drawLine(startX, startY, newX, newY, paint);
-                                startX = (int) event.getX();
-                                startY = (int) event.getY();
-                                iv.setImageBitmap(baseBitmap);
+//                                int newX = (int) event.getX();
+//                                int newY = (int) event.getY();
+//                                canvas.drawLine(startX, startY, newX, newY, paint);
+//                                startX = (int) event.getX();
+//                                startY = (int) event.getY();
+//                                iv.setImageBitmap(baseBitmap);
+                                final float newX = (float) event.getX();
+                                final float newY = (float) event.getY();
+                                final float previousX = startX;
+                                final float previousY = startY;
+                                final float dx = Math.abs(newX - previousX);
+                                final float dy = Math.abs(newY - previousY);
+
+                                //两点之间的距离大于等于8时，连接连接两点形成直线
+                                if (dx >= 3 || dy >= 3) {
+                                    canvas.drawLine(startX, startY, newX, newY, paint);
+                                    startX = (float) event.getX();
+                                    startY = (float) event.getY();
+                                    iv.setImageBitmap(baseBitmap);
+                                }
                                 break;
                             case MotionEvent.ACTION_UP:
                                 break;
@@ -508,8 +523,8 @@ public class SigningActivity extends Activity {
                     String child = System.currentTimeMillis() + ".mp4";
                     Sp_path = (file1.getAbsolutePath() + File.separator + child);
                     File videoFile = new File(file1, child);
-                    Log.e("---", "Record: "+videoFile.getAbsolutePath() );
-                    Log.e("---", "Record: "+SigningActivity.this.getFilesDir() );
+                    Log.e("---", "Record: " + videoFile.getAbsolutePath());
+                    Log.e("---", "Record: " + SigningActivity.this.getFilesDir());
                     mediaRecorder = new MediaRecorder();
 
                     Camera.Parameters parameters = myCamera.getParameters();
@@ -537,18 +552,18 @@ public class SigningActivity extends Activity {
 //                    mediaRecorder.setVideoFrameRate(5);
 //                    mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 //                    mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-                    if(Build.VERSION.SDK_INT>=24) { //判读版本是否在7.0以上
-                        Uri uriForFile = FileProvider.getUriForFile(SigningActivity.this, BuildConfig.APPLICATION_ID+".fileprovider", videoFile);
-                        Log.e("---", "getPath: "+uriForFile.getPath() );
-                        Log.e("---", "getEncodedPath: "+uriForFile.getEncodedPath() );
-                        Log.e("---", "getAuthority: "+uriForFile.getAuthority() );
-                        Log.e("---", "getLastPathSegment: "+uriForFile.getLastPathSegment() );
+                    if (Build.VERSION.SDK_INT >= 24) { //判读版本是否在7.0以上
+                        Uri uriForFile = FileProvider.getUriForFile(SigningActivity.this, BuildConfig.APPLICATION_ID + ".fileprovider", videoFile);
+                        Log.e("---", "getPath: " + uriForFile.getPath());
+                        Log.e("---", "getEncodedPath: " + uriForFile.getEncodedPath());
+                        Log.e("---", "getAuthority: " + uriForFile.getAuthority());
+                        Log.e("---", "getLastPathSegment: " + uriForFile.getLastPathSegment());
 //                        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
 //                        String name = UUID.randomUUID() + ".mp4";
 //                        File targetFile = new File(file, name);
 //                        mediaRecorder.setOutputFile(targetFile.getAbsolutePath());
                         mediaRecorder.setOutputFile(videoFile.getAbsolutePath());
-                    }else {
+                    } else {
                         mediaRecorder.setOutputFile(videoFile.getAbsolutePath());
                     }
                     mediaRecorder.setPreviewDisplay(mSurfaceHolder.getSurface());
