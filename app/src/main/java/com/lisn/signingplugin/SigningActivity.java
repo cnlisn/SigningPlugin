@@ -598,6 +598,7 @@ public class SigningActivity extends Activity {
 //                        String name = UUID.randomUUID() + ".mp4";
 //                        File targetFile = new File(file, name);
 //                        mediaRecorder.setOutputFile(targetFile.getAbsolutePath());
+                        Sp_path = uriForFile.toString();
                         mediaRecorder.setOutputFile(videoFile.getAbsolutePath());
                     } else {
                         mediaRecorder.setOutputFile(videoFile.getAbsolutePath());
