@@ -222,8 +222,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 188) {
-            Log.e("---", "onActivityResult: " + data.getStringExtra("qm_path") + "===" + data.getStringExtra("Sp_path"));
+//            Log.e("---", "onActivityResult: " + data.getStringExtra("qm_path") + "===" + data.getStringExtra("Sp_path"));
             sp_path = data.getStringExtra("Sp_path");
+            Log.e("---", "onActivityResult: "  + "===" + sp_path);
         }
     }
 }

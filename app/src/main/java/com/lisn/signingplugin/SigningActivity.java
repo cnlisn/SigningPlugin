@@ -60,6 +60,7 @@ public class SigningActivity extends Activity {
     private String TAG = "----";
     private SurfaceView surfaceView;
     boolean isVisibility;
+    private File videoFile;
 
     private void title() {
         LinearLayout ll = (LinearLayout) findViewById(R.getId("id", "ll_title"));
@@ -146,7 +147,7 @@ public class SigningActivity extends Activity {
                                 final float dy = Math.abs(newY - previousY);
 
                                 //两点之间的距离大于等于8时，连接连接两点形成直线
-                                if (dx >= 3 || dy >= 3) {
+                                if (dx >= 8 || dy >= 8) {
                                     canvas.drawLine(startX, startY, newX, newY, paint);
                                     startX = (float) event.getX();
                                     startY = (float) event.getY();
@@ -289,6 +290,41 @@ public class SigningActivity extends Activity {
     public void clear(View view) {
         canvas.drawColor(Color.WHITE);
         iv.setImageBitmap(baseBitmap);
+        stopRecordUnSave();
+    }
+
+    public void stopRecordUnSave() {
+        Log.d("Recorder", "stopRecordUnSave");
+
+        try {
+            mediaRecorder.stop();
+        } catch (RuntimeException r) {
+            Log.d("Recorder", "RuntimeException: stop() is called immediately after start()");
+            if (videoFile.exists()) {
+                //不保存直接删掉
+                videoFile.delete();
+            }
+        } finally {
+            releaseMediaRecorder();
+        }
+        if (videoFile.exists()) {
+            //不保存直接删掉
+            videoFile.delete();
+        }
+        Record();
+    }
+
+    private void releaseMediaRecorder() {
+        if (mediaRecorder != null) {
+            // clear recorder configuration
+            mediaRecorder.reset();
+            // release the recorder object
+            mediaRecorder.release();
+            mediaRecorder = null;
+            // Lock camera for later use i.e taking it back from MediaRecorder.
+            // MediaRecorder doesn't need it anymore and we will release it if the activity pauses.
+            Log.d("Recorder", "release Recorder");
+        }
     }
 
     public void save(View view) {
@@ -522,7 +558,7 @@ public class SigningActivity extends Activity {
                     }
                     String child = System.currentTimeMillis() + ".mp4";
                     Sp_path = (file1.getAbsolutePath() + File.separator + child);
-                    File videoFile = new File(file1, child);
+                    videoFile = new File(file1, child);
                     Log.e("---", "Record: " + videoFile.getAbsolutePath());
                     Log.e("---", "Record: " + SigningActivity.this.getFilesDir());
                     mediaRecorder = new MediaRecorder();
