@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -22,6 +23,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private int IVheight;
     private int IVwidth;
     private GestureDetector detector;
+    private VideoView videoView;
+    private String sp_path;
 
     public static int dip2px(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
@@ -123,6 +126,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //endregion
         iv = (ImageView) findViewById(R.id.iv);
         iv.setOnTouchListener(shopCarSettleTouch);
+
+        Button bf = (Button) findViewById(R.id.bf);
+        videoView = (VideoView) findViewById(R.id.vv);
+        bf.setOnClickListener(this);
+        Intent intent = getIntent();
+        sp_path = intent.getStringExtra("sp_path");
     }
 
 
@@ -167,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         t = b - v.getHeight();
                     }
                     v.layout(l, t, r, b);
-                    Log.e(TAG, "onTouch: " +l+"=="+t+"=="+r+"=="+b);
+                    Log.e(TAG, "onTouch: " + l + "==" + t + "==" + r + "==" + b);
                     lastX = (int) event.getRawX();
                     lastY = (int) event.getRawY();
                     v.postInvalidate();
@@ -196,8 +205,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         if (v.getId() == R.id.bt_lx) {
             Intent intent = new Intent(this, SigningActivity.class);
-//            startActivityForResult(intent,188);
-            startActivity(intent);
+            startActivityForResult(intent, 188);
+//            startActivity(intent);
+        }
+        if (v.getId() == R.id.bf) {
+            if (sp_path != null && sp_path.length() > 1) {
+//            iv_qm.setVisibility(View.GONE);
+                videoView.setVisibility(View.VISIBLE);
+                videoView.setVideoPath(sp_path);
+                videoView.start();
+            }
         }
     }
 
@@ -206,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 188) {
             Log.e("---", "onActivityResult: " + data.getStringExtra("qm_path") + "===" + data.getStringExtra("Sp_path"));
+            sp_path = data.getStringExtra("Sp_path");
         }
     }
 }

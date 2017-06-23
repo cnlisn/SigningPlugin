@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PaintFlagsDrawFilter;
+import android.media.CamcorderProfile;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -31,6 +32,8 @@ import android.widget.Toast;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
+import java.util.UUID;
 
 import android.content.pm.PackageManager;
 import android.Manifest;
@@ -304,6 +307,10 @@ public class SigningActivity extends Activity {
             sendBroadcast(intent);
 //            SigningPlugin.cbCtx.success(qm_path + "##" + Sp_path);
             Log.e(TAG, "SaveImage: " + qm_path + "--" + Sp_path);
+            Intent intent1 = new Intent();
+            intent1.putExtra("qm_path", qm_path);
+            intent1.putExtra("Sp_path", Sp_path);
+            setResult(188, intent1);
             finish();
 
         } catch (Exception e) {
@@ -466,6 +473,7 @@ public class SigningActivity extends Activity {
             try {
                 myCamera = Camera.open(Camera.CameraInfo.CAMERA_FACING_FRONT);//前置摄像头
                 Camera.Parameters myParameters = myCamera.getParameters();
+                myParameters.setPreviewSize(320, 240);
                 myCamera.setParameters(myParameters);
                 myCamera.setDisplayOrientation(90);
                 myCamera.setPreviewDisplay(mSurfaceHolder);
@@ -504,26 +512,42 @@ public class SigningActivity extends Activity {
                     Log.e("---", "Record: "+SigningActivity.this.getFilesDir() );
                     mediaRecorder = new MediaRecorder();
 
+                    Camera.Parameters parameters = myCamera.getParameters();
+                    List<Camera.Size> mSupportedPreviewSizes = parameters.getSupportedPreviewSizes();
+                    List<Camera.Size> mSupportedVideoSizes = parameters.getSupportedVideoSizes();
+                    Camera.Size optimalSize = CameraHelper.getOptimalVideoSize(mSupportedVideoSizes,
+                            mSupportedPreviewSizes, surfaceView.getWidth(), surfaceView.getHeight());
+                    CamcorderProfile profile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
+                    // 这里是重点，分辨率和比特率
+                    // 分辨率越大视频大小越大，比特率越大视频越清晰
+                    // 清晰度由比特率决定，视频尺寸和像素量由分辨率决定
+                    // 比特率越高越清晰（前提是分辨率保持不变），分辨率越大视频尺寸越大。
+                    profile.videoFrameWidth = optimalSize.width;
+                    profile.videoFrameHeight = optimalSize.height;
+                    // 这样设置 1080p的视频 大小在5M , 可根据自己需求调节
+                    profile.videoBitRate = 2 * optimalSize.width * optimalSize.height;
+
                     myCamera.unlock();
                     mediaRecorder.setCamera(myCamera);
-                    mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                    mediaRecorder.setAudioSource(MediaRecorder.AudioSource.DEFAULT);
                     mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-                    mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-                    mediaRecorder.setVideoSize(320, 240);
-                    mediaRecorder.setVideoFrameRate(5);
-                    mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-                    mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
+                    mediaRecorder.setProfile(profile);
+//                    mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+//                    mediaRecorder.setVideoSize(320, 240);
+//                    mediaRecorder.setVideoFrameRate(5);
+//                    mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+//                    mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
                     if(Build.VERSION.SDK_INT>=24) { //判读版本是否在7.0以上
                         Uri uriForFile = FileProvider.getUriForFile(SigningActivity.this, BuildConfig.APPLICATION_ID+".fileprovider", videoFile);
                         Log.e("---", "getPath: "+uriForFile.getPath() );
                         Log.e("---", "getEncodedPath: "+uriForFile.getEncodedPath() );
                         Log.e("---", "getAuthority: "+uriForFile.getAuthority() );
                         Log.e("---", "getLastPathSegment: "+uriForFile.getLastPathSegment() );
-//                        06-20 11:02:48.953 26990-26990/com.lisn.signingplugin E/---: getPath: /Sp/1497927768935.mp4
-//                        06-20 11:02:48.953 26990-26990/com.lisn.signingplugin E/---: getEncodedPath: /Sp/1497927768935.mp4
-//                        06-20 11:02:48.953 26990-26990/com.lisn.signingplugin E/---: getAuthority: com.lisn.signingplugin.fileprovider
-//                        06-20 11:02:48.953 26990-26990/com.lisn.signingplugin E/---: getLastPathSegment: 1497927768935.mp4
-                        mediaRecorder.setOutputFile(uriForFile.getPath());
+//                        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MOVIES);
+//                        String name = UUID.randomUUID() + ".mp4";
+//                        File targetFile = new File(file, name);
+//                        mediaRecorder.setOutputFile(targetFile.getAbsolutePath());
+                        mediaRecorder.setOutputFile(videoFile.getAbsolutePath());
                     }else {
                         mediaRecorder.setOutputFile(videoFile.getAbsolutePath());
                     }

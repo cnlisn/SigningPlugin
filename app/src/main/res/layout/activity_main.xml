@@ -15,4 +15,14 @@
       android:layout_width="80dp"
       android:layout_height="120dp" />
 
+  <Button
+      android:id="@+id/bf"
+      android:text="播放"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content" />
+  <VideoView
+      android:id="@+id/vv"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+
 </LinearLayout>
